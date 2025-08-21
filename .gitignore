@@ -205,3 +205,20 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Session files and temporary data
+.sesskey
+*.sesskey
+.session
+*.session
+
+# Vector databases and model cache
+vector_store/
+restaurant_reviews_vectors/
+.vectordb/
+*.vectordb
+
+# Large model files and embeddings cache
+*.embedding
+*.embeddings
+embeddings_cache/
