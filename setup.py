@@ -8,8 +8,8 @@ import sys
 from pathlib import Path
 from dotenv import load_dotenv
 
-# Load environment variables from .env file
-project_root = Path(__file__).parent.parent
+# Load environment variables from .env file (same directory as this file)
+project_root = Path(__file__).parent
 env_path = project_root / ".env"
 
 if env_path.exists():
