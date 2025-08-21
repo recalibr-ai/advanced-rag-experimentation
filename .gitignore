@@ -222,3 +222,7 @@ restaurant_reviews_vectors/
 *.embedding
 *.embeddings
 embeddings_cache/
+
+# Large PDF files
+research/*.pdf
+*.pdf
