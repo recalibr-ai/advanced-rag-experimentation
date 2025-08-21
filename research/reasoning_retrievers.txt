@@ -1,0 +1,306 @@
+--- Page 1 ---
+3 Optimizing Retrieval with
+Reasoning Models
+Based on a presentation by Orion W el ler
+Orion W eller from Johns Hopkins University focuses on embedding
+the instruction-following and reasoning capabilities of modern Large
+Language Models (LLMs) directly into the retrieval process.
+In his talk, Orion argues that while LLMs have improved RAG, the core
+retrieval step has remained static. He introduces a paradigm where
+instruction-following and reasoning are baked directly into retrieval
+models, a fundamental shift from using LLMs for query rewriting or as
+generic rerankers.
+58
+
+--- Page 2 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+3.1 LLM Capabilities: Instruction Following and
+Reasoning
+(Timestamp: 00:00:18 )
+The talk begins by highlighting the user-facing interfaces of modern
+LLMs like ChatGPT, which have set new expectations for how we
+interact with AI. One key capability of LLMs is instruction following :
+executing complex, multi-part natural language instructions with high
+fidelity .
+59
+
+--- Page 3 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+(Timestamp: 00:00:36 )
+Orion shows the result of a pirate-themed haiku prompt. The model
+successfully adheres to all constraints: it generates a haiku, maintains
+a pirate style, and mentions “RAG,” demonstrating a level of instruction
+following that is a recent and significant advancement.
+60
+
+--- Page 4 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+(Timestamp: 00:00:58 )
+A second key capability is reasoning , also known as test-time compute
+or “thinking. ” The slide shows a model verbalizing its thought process to
+solve a problem, generating intermediate “thinking tokens” that outline
+its step-by-step logic before providing the final answer.
+61
+
+--- Page 5 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+3.2 The Search Paradigm Hasn’t Changed
+(Timestamp: 00:01:52 )
+T o illustrate how little the search paradigm has changed, Orion shows
+Google’s interface from 1999.
+62
+
+--- Page 6 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+(Timestamp: 00:01:58 )
+He contrasts it with a modern Google search bar. Despite 26 years of
+development, the fundamental interaction remains the same: a user
+types keywords, and the system matches them to return a list of links.
+63
+
+--- Page 7 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+(Timestamp: 00:02:46 )
+Despite the interface, Orion argues the underlying retrieval process
+has not evolved. Even in advanced systems, the LLM is often just
+a “wrapper. ” The system sends the query to a traditional search
+engine, gets back a standard list of results, and then uses the LLM
+to summarize them. The retrieval step itself hasn’t gained the new
+capabilities of the LLM.
+64
+
+--- Page 8 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+3.3 Evolution of Search Paradigms
+(Timestamp: 00:03:58 )
+T o illustrate current limitations, Orion starts with Keyword Search ,
+which relies on exact lexical matching. Given a query and three
+documents, keyword search matches “Data Encryption Standards”
+and “W olves Outside Y our Data” because they contain the keyword
+“data. ”
+It fails to retrieve “Digital Protection” because it lacks the keyword
+“data,” even though “digital” is semantically similar.
+65
+
+--- Page 9 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+(Timestamp: 00:04:11 )
+The next evolution is Semantic Search , which matches based on
+meaning, often by representing queries and documents as vectors in a
+shared semantic space. A good semantic search model would retrieve all
+three documents, as it understands the relationship between “data” and
+“digital,” and “privacy” and “protection. ”
+66
+
+--- Page 10 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+(Timestamp: 00:05:25 )
+Orion introduces Instruction-based Search , where the query is a
+nuanced command. The user wants to find documents about data
+privacy that also use “extended metaphors. ”
+An instruction-based search system should understand this meta-level
+constraint and retrieve only the “W olves Outside Y our Data” document,
+which uses a metaphorical title. It correctly identifies that the other
+two documents, while topically relevant, do not meet the stylistic
+instruction.
+67
+
+--- Page 11 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+(Timestamp: 00:06:16 )
+Orion pushes the concept to its extreme with Prompt and
+Reasoning-based Search . The query now includes instructions about
+the desired behavior of the search engine, such as “Have really high
+recall or I will lose my job. ”
+A traditional search engine would misinterpret this, likely searching for
+documents containing the word “recall. ” An advanced, reasoning-based
+retriever should understand the user’s intent and adjust its retrieval
+strategy .
+68
+
+--- Page 12 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+3.4 Understanding Instructions in IR
+(Timestamp: 00:06:42 )
+What is an instruction in the context of IR? Orion breaks it down into
+several categories:
+• Document attributes like date, length, or source
+• NLU aspects , such as document sentiment or writing style
+• Logical conditions , combining multiple constraints with
+operators like AND, OR, and NOT
+The space of possible instructions mirrors the complexity of natural
+language.
+69
+
+--- Page 13 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+3.5 Introducing Promptriever and Rank1
+(Timestamp: 00:07:45 )
+Orion introduces two models from his research that embody these
+principles:
+1. Promptriever : A fast embedding model for following instructions
+during initial retrieval
+2. Rank1 : A powerful but slower reranker that uses reasoning and
+test-time compute for nuanced relevance judgments
+70
+
+--- Page 14 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+3.6 Promptriever: Instruction-T rained Retrieval
+(Timestamp: 00:08:23 )
+Orion explains the two main retrieval architectures. A Bi-Encoder
+(dense retriever) creates separate query and document embeddings
+for fast comparison, making it highly scalable. A Cross-Encoder
+(reranker) processes the query and document together for deeper
+interaction at a higher computational cost. Promptriever is a bi-
+encoder.
+71
+
+--- Page 15 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+(Timestamp: 00:09:10 )
+The main research question was how to enable fast, scalable bi-encoders
+to understand complex instructions. The missing ingredient was
+training data . Existing retrieval datasets like MSMARCO lack
+instructions because users don’t type them into traditional search
+engines.
+72
+
+--- Page 16 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+(Timestamp: 00:10:07 )
+This slide illustrates the process of generating the training data, starting
+with a standard query . The process uses an existing query-document
+pair from a standard dataset and uses an LLM to generate a detailed
+instruction that makes the relevance criteria more specific. A crucial
+part was also generating instruction negatives - documents that are
+relevant to the query but irrelevant to the instruction .
+73
+
+--- Page 17 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+3.7 Promptriever Evaluation Results
+(Timestamp: 00:12:36 )
+On F ollowIR, the baseline RepLLaMA (and all prior embedding
+models) scored negatively , performing worse when given an instruction.
+Promptriever is the first to achieve a positive score, demonstrating that
+bi-encoders can learn to follow instructions.
+74
+
+--- Page 18 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+(Timestamp: 00:13:58 )
+Without a prompt, Promptriever performs comparably to the
+RepLLaMA baseline, showing that instruction-following capabilities
+don’t hurt performance on traditional tasks.
+75
+
+--- Page 19 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+(Timestamp: 00:14:13 )
+When a generic instruction is added, Promptriever’s performance
+increases significantly , while the baseline’s degrades slightly . This
+demonstrates that Promptriever’s retrieval strategy can be controlled
+with natural language - a form of zero-shot hyperparameter
+optimization via prompting .
+76
+
+--- Page 20 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+3.8 Rank1: Reasoning-Based Reranking
+(Timestamp: 00:16:08 )
+The focus now shifts to Rank1, the reasoning-based model. The
+associated paper’s title is “Rank1: T est-Time Compute for Information
+Retrieval,” highlighting its focus on reasoning in the reranking stage.
+77
+
+--- Page 21 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+(Timestamp: 00:17:08 )
+This slide shows what the reasoning process looks like in information
+retrieval. Given a query and a document, the model generates a detailed
+reasoning trace, identifying key phrases, analyzing the relationship
+between query and document, and questioning its own interpretations
+before arriving at a final judgment.
+78
+
+--- Page 22 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+(Timestamp: 00:18:50 )
+This slide shows Rank1’s reasoning on a LeetCode problem. Asked
+to find a similar problem, it correctly identifies the core “two-pointer
+approach” algorithm in the provided document and recognizes that the
+candidate document also uses the same technique, demonstrating a deep,
+algorithmic level of understanding.
+79
+
+--- Page 23 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+3.9 Rank1 Performance Results
+(Timestamp: 00:19:38 )
+The evaluation covers tasks testing reasoning (BRIGHT), negation
+(NevIR), and instruction following (mF ollowIR). The baseline model,
+RankLLaMA, was trained on 10 times more data than Rank1.
+Despite being trained on far less data, Rank1 nearly doubles the
+performance of the baseline on the BRIGHT reasoning benchmark.
+80
+
+--- Page 24 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+(Timestamp: 00:20:16 )
+T o isolate the impact of the reasoning chain, they compared training
+the same model on the same data, with and without the “thinking”
+part of the training examples. The results show that training the
+model to generate the reasoning chain leads to a massive 10-point gain
+in performance. The act of “thinking” itself unlocks these advanced
+capabilities.
+81
+
+--- Page 25 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+3.10 Finding Novel Relevant Documents
+(Timestamp: 00:20:44 )
+They were surprised by low scores on the DL19/DL20 datasets,
+discovering their model was finding many documents that had never
+been judged by human annotators because older systems had never
+retrieved them.
+82
+
+--- Page 26 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+(Timestamp: 00:21:39 )
+Reasoning-based models are not just improving scores on old
+benchmarks; they are finding new, relevant documents that
+previous systems missed. This also suggests the IR community should
+move on from older evaluation datasets as they may not be equipped to
+measure modern model capabilities.
+83
+
+--- Page 27 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+3.11 Chapter T akeaways
+(Timestamp: 00:22:37 )
+Orion concludes that the overall goal is to create IR systems that work
+like LLMs, capable of handling queries that combine topic, style, and
+behavioral instructions.
+Key insights from this work:
+1. Promptriever enables fast bi-encoder retrievers to follow complex
+instructions through specialized training data
+2. Rank1 uses reasoning chains to achieve superior performance on
+complex retrieval tasks
+3. Both models demonstrate that LLM capabilities can be
+successfully integrated into retrieval systems
+4. Reasoning-based models discover novel relevant documents that
+traditional systems miss
+84
+
+--- Page 28 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+New retrievers can directly benefit from rapid LLM advancements. As
+LLMs get better at reasoning and instruction following, so will the
+retrieval systems built upon them.
+3.12 Video
+Here is the full video:
+https://youtu.be/YB3b-wPbSH8
+85
+

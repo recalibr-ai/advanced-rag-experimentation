@@ -1,0 +1,323 @@
+--- Page 1 ---
+4 Late Interaction Models For RAG
+Based on a presentation by Antoine Chaﬀin
+Antoine Chaﬀin , a researcher at LightOn, contributed to impactful open-
+source tools like ModernBER T and PyLate , a library for working with
+late-interaction models.
+His talk explains the intrinsic limitations of single-vector search, such
+as information loss from pooling, and introduces late interaction models
+as a more powerful alternative for modern RAG use cases like out-of-
+domain generalization and long context retrieval.
+86
+
+--- Page 2 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+4.1 Dense Vector Search Architecture
+(Timestamp: 00:03:07 )
+This slide diagrams the standard architecture for dense (single) vector
+search. A query and a document are separately fed through an encoder
+model (like BER T) to generate contextualized vector representations
+for each token. A pooling operation (e.g., max, mean, [CLS] token,
+etc.) then compresses all these token vectors into a single vector for the
+query and a single vector for the document. Finally , a similarity score
+(typically cosine similarity) is computed between these two vectors to
+determine relevance. The information loss in the pooling step is a key
+limitation of this approach.
+87
+
+--- Page 3 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+4.2 Why Dense Models Became Popular
+(Timestamp: 00:03:54 )
+Dense vector search has become the standard for RAG pipelines for
+several reasons. It offers strong out-of-the-box performance, and a
+vast number of pre-trained models are available on platforms like the
+Hugging F ace Hub, catering to different sizes, languages, and domains.
+F urthermore, these models are easy to deploy using the growing
+ecosystem of vector databases and serving APIs.
+88
+
+--- Page 4 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+4.3 The Benchmark Problem
+(Timestamp: 00:04:17 )
+Antoine uses the BEIR benchmark as an example of Goodhart’s
+Law in action. BEIR was introduced to evaluate the out-of-domain
+generalization of retrieval models. However, as it became the standard
+benchmark to beat, models began to overfit to its specific datasets.
+Consequently , top-performing models on the BEIR leaderboard may not
+generalize well to new, unseen use cases, underscoring the importance of
+running your own evaluations on your specific data.
+89
+
+--- Page 5 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+4.4 Hidden Limitations
+(Timestamp: 00:05:36 )
+Antoine argues that if you cannot measure a capability , you cannot
+improve it. Existing benchmarks often miss important aspects of model
+performance. F or instance, most older models were evaluated with a
+context window of only 512 tokens. While many newer models claim to
+support 8k tokens, recent evaluations have shown that their performance
+degrades significantly beyond 4k, a limitation that was not captured by
+older benchmarks.
+90
+
+--- Page 6 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+4.5 Long Context Performance
+(Timestamp: 00:06:24 )
+This table from the LongEmbed paper illustrates the performance of
+various embedding models on long-context retrieval tasks. It shows
+that extending models with techniques like SelfExtend or NTK can
+significantly improve their ability to handle long contexts, with the E5-
+Mistral + NTK model achieving the highest average score.
+91
+
+--- Page 7 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+4.6 Complex Retrieval T asks
+(Timestamp: 00:06:33 )
+Retrieval goes beyond simple keyword or semantic matching. Modern
+RAG systems require more complex, reasoning-based retrieval. F or
+example, a query asking for a different Snowflake function than
+UNPIVOT requires understanding the function’s purpose, not just
+matching keywords. Similarly , a math question might require retrieving
+a document that uses the same theorem, even if the numbers are
+different.
+92
+
+--- Page 8 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+(Timestamp: 00:07:27 )
+This table shows the performance of various retrieval models on the
+BRIGHT benchmark, which is designed for reasoning-intensive tasks.
+The results show that even large, powerful models struggle, with the
+best model achieving an average nDCG@10 of only 24.3.
+93
+
+--- Page 9 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+4.7 BM25’s Surprising Strength
+(Timestamp: 00:07:50 )
+Interestingly , BM25, a simple lexical search method that does not use
+deep learning, performs surprisingly well on these more challenging long-
+context and reasoning-intensive benchmarks. Its strength lies in its lack
+of compression; by matching exact keywords, it avoids the information
+loss that plagues dense models, making it a robust baseline for out-of-
+domain tasks.
+94
+
+--- Page 10 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+4.8 The Pooling Problem
+(Timestamp: 00:08:24 )
+Pooling is the core flaw of dense models. The process of compressing
+all the token vectors from a document into a single vector is inherently
+lossy . This compression forces the model to be selective about what
+information it retains.
+95
+
+--- Page 11 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+(Timestamp: 00:08:41 )
+This slide illustrates how dense models learn selective information
+encoding. If a model is trained on a movie review dataset where
+queries are mostly about actors, it will learn to prioritize and encode
+information about actors while discarding details about the plot, music,
+or themes. This selective behavior leads to poor performance on out-
+of-domain queries (e.g., asking about the plot) or when applied to new
+domains entirely (e.g., cooking recipes).
+96
+
+--- Page 12 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+(Timestamp: 00:10:42 )
+BM25 is effective in certain cases because it avoids pooling and
+compression, relying on exact keyword matching. In the example,
+“Leonardo DiCaprio disaster” in the query directly matches the terms
+in the document. However, this approach fails when there’s no direct
+lexical overlap, such as with synonyms or different languages.
+97
+
+--- Page 13 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+4.9 Late Interaction Solution
+(Timestamp: 00:11:32 )
+Late interaction models offer a solution by replacing the pooling step.
+Instead of compressing token vectors into a single one, they keep all
+the token-level information. A token-level similarity operator, such
+as MaxSim, is then used to compute the final score. MaxSim works
+by finding the maximum similarity between each query token and all
+document tokens, then summing these maximum scores.
+98
+
+--- Page 14 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+(Timestamp: 00:12:27 )
+This slide provides a clear comparison between dense and late-
+interaction models. A dense model forces different concepts (e.g., actors
+and plot) into a single, conflicted representation. In contrast, a late-
+interaction model maintains separate token-level representations. The
+MaxSim operator can then match a query about actors to the specific
+actor tokens and a query about the plot to the plot tokens, resulting in
+clean, uninterrupted signals for each aspect of the document.
+99
+
+--- Page 15 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+4.10 Performance Advantages
+(Timestamp: 00:13:51 )
+Late-interaction models like ColBER T have demonstrated strong out-
+of-domain performance, even outperforming in-domain dense models.
+Antoine emphasizes that because “out-of-domain” is hard to define, the
+best approach is to test these models on your own specific data to see
+the benefits.
+100
+
+--- Page 16 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+(Timestamp: 00:15:04 )
+The GTE-ModernColBER T model, which uses late interaction, achieves
+state-of-the-art results on the LongEmbed benchmark. Notably , it
+outperforms other models by a large margin, even though it was trained
+on documents with a maximum length of only 300 tokens, while the base
+models it’s compared against were trained with an 8k context window.
+101
+
+--- Page 17 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+(Timestamp: 00:15:52 )
+On the reasoning-intensive BRIGHT benchmark, the 150M-parameter
+Reason-ModernColBER T outperforms all 7B-parameter models (which
+are 45 times larger). It is even competitive with the proprietary
+ReasonIR-8B model, which was trained on the same data.
+102
+
+--- Page 18 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+(Timestamp: 00:16:30 )
+This slide provides a direct, apples-to-apples comparison on the
+BRIGHT benchmark. A late-interaction model achieves a mean score
+of 19.61, while a dense (single vector) model with the same backbone
+and training data scores only 12.31.
+103
+
+--- Page 19 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+4.11 Interpretability Benefits
+(Timestamp: 00:16:48 )
+Interpretability is a valuable bonus of late-interaction models like
+ColBER T. Because the MaxSim operator performs granular, token-
+level matching, it’s possible to see exactly which parts of a document
+contributed to the match. This allows you to identify the specific sub-
+chunk of text that is most relevant, which is useful for debugging and for
+providing more precise context to an LLM in a RAG pipeline.
+104
+
+--- Page 20 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+4.12 Barriers to Adoption
+(Timestamp: 00:17:42 )
+Despite their advantages, dense models are still mainstream. Antoine
+attributes this to three main factors:
+1. Storing cost: Storing n token vectors instead of one is more
+expensive, though techniques like quantization and footprint
+reduction are making this more manageable.
+2. V ectorDB support: Initially , most vector databases did not
+support the different search mechanism required by late-interaction
+models. However, this is changing, with major providers like V espa,
+W eaviate, and LanceDB now offering support.
+3. Lack of accessible tools: The widespread availability of libraries
+like Sentence T ransformers made it very easy to work with dense
+models.
+105
+
+--- Page 21 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+4.13 PyLate: Making Late Interaction Accessible
+(Timestamp: 00:18:43 )
+T o address the lack of accessible tools, Antoine and his collaborators
+created PyLate , a library that extends the popular Sentence
+T ransformers framework for multi-vector models. Since late interaction
+is essentially a dense model without pooling and with a MaxSim
+operator, PyLate can leverage the existing Sentence T ransformers
+ecosystem.
+106
+
+--- Page 22 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+(Timestamp: 00:20:08 )
+The syntax for training models with PyLate is designed to be very
+similar to Sentence T ransformers. This familiarity makes it easy for
+developers to adapt their existing boilerplates and workflows. The
+example code shows how to define a model, load a dataset, configure
+training arguments, and start training with just a few modifications to a
+standard Sentence T ransformers script.
+107
+
+--- Page 23 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+(Timestamp: 00:21:28 )
+PyLate is not just for training; it also provides tools for evaluation. It
+includes a built-in, eﬀicient index based on PLAID for fast retrieval. It
+also has helper functions that use the ranx library to easily compute
+standard IR metrics (like NDCG and Recall) on the retrieval output.
+108
+
+--- Page 24 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+4.14 Future Research Directions
+(Timestamp: 00:22:49 )
+One future research avenue is to reduce the storage cost of multi-vector
+models. T echniques like hierarchical pooling and quantization are
+being explored to find the optimal trade-off between index size and
+performance.
+109
+
+--- Page 25 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+(Timestamp: 00:23:34 )
+Another promising direction is applying late interaction to other
+modalities beyond text. Approaches like ColPali have already used
+ColBER T for OCR-free RAG with text and images. The diagram shows
+the CLaMR model, which uses late interaction for multimodal content
+retrieval across video, audio, OCR, and metadata.
+110
+
+--- Page 26 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+(Timestamp: 00:24:21 )
+The final future avenue is to develop better similarity functions. While
+the MaxSim operator is effective and has nice properties, it is relatively
+naive. Research into learnable late interaction functions presents an
+opportunity to further improve the performance of these models.
+111
+
+--- Page 27 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+4.15 Chapter Summary
+(Timestamp: 00:24:36 )
+Key takeaways from late interaction models:
+1. Overcome limitations : Late interaction models address the
+fundamental information loss problem of single-vector search
+2. Modern use cases : They excel at out-of-domain, long context,
+and reasoning-intensive retrieval tasks
+3. Growing ecosystem : T ools like PyLate and vector database
+support make them increasingly accessible
+4. Performance gains : Consistent improvements over dense models
+across challenging benchmarks
+5. Interpretability : T oken-level matching provides valuable
+debugging and explanation capabilities
+The technology is mature enough for production use, and the
+performance benefits often outweigh the minor increases in storage and
+112
+
+--- Page 28 ---
+AI Evals Course: 35% off at bit.ly/evals-ai
+computational costs.
+4.16 Video
+Here is the full video:
+https://youtu.be/1x3k0V2IITo
+113
+
