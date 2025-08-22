@@ -1,0 +1,112 @@
+{
+  "multi_constraint_queries": [
+    {
+      "query": "Find restaurants suitable for a business lunch where I can discuss confidential information, accommodate my client's vegetarian diet, and stay within a $40 per person budget",
+      "expected_matches": ["BoardRoom Bistro"],
+      "traditional_fails_because": "Matches individual keywords but can't verify ALL constraints are met simultaneously",
+      "reasoning_succeeds_because": "Can verify each constraint: confidential (private booths), vegetarian (extensive menu), budget ($35 including appetizer)"
+    },
+    {
+      "query": "Find laptop-friendly cafes with strong WiFi, power outlets, and quiet work environment policies",
+      "expected_matches": ["Laptop Cafe Haven"],
+      "traditional_fails_because": "Matches 'laptop' and 'WiFi' but misses policy details about noise management",
+      "reasoning_succeeds_because": "Understands the complete work environment requirements including noise policy"
+    },
+    {
+      "query": "Find restaurants that can safely accommodate severe food allergies with proper protocols",
+      "expected_matches": ["Allergy-Safe Haven"],
+      "traditional_fails_because": "Matches 'allergies' but doesn't understand severity or safety protocols needed",
+      "reasoning_succeeds_because": "Recognizes comprehensive allergy management: separate prep areas, trained staff, manager involvement"
+    }
+  ],
+  "contextual_inference_queries": [
+    {
+      "query": "Find family-friendly restaurants that can handle energetic children without disturbing other diners",
+      "expected_matches": ["Family Zone Pizza"],
+      "traditional_fails_because": "Matches 'family-friendly' and 'children' but misses nuanced noise management context",
+      "reasoning_succeeds_because": "Infers noise management from 'high ceilings that absorb sound' and separate family section"
+    },
+    {
+      "query": "Find restaurants that cater specifically to senior citizens with appropriate accommodations",
+      "expected_matches": ["Senior Discount Diner"],
+      "traditional_fails_because": "Might match 'senior' but doesn't understand accommodation context",
+      "reasoning_succeeds_because": "Recognizes senior-specific accommodations: early bird specials, larger print menus, comfortable seating"
+    },
+    {
+      "query": "Find restaurants with extremely loud environments that prevent conversation",
+      "expected_matches": ["Noise Level Nightmare"],
+      "traditional_fails_because": "Doesn't understand negative acoustic context",
+      "reasoning_succeeds_because": "Understands the acoustic environment: 'echo chamber effect', 'shouting across table'"
+    }
+  ],
+  "conditional_logic_queries": [
+    {
+      "query": "Find restaurants that are good for first dates but only if the person is not vegetarian",
+      "expected_matches": ["Carnivore's Corner"],
+      "traditional_fails_because": "Can't process conditional logic 'good for X BUT only if Y'",
+      "reasoning_succeeds_because": "Understands conditional: perfect for meat-eaters, disappointing for vegetarians"
+    },
+    {
+      "query": "Find restaurants that are only good when weather conditions are perfect",
+      "expected_matches": ["Weather-Dependent Terrace"],
+      "traditional_fails_because": "Doesn't understand weather-dependent quality conditions",
+      "reasoning_succeeds_because": "Recognizes conditional quality: amazing when weather permits, mediocre indoors"
+    },
+    {
+      "query": "Find restaurants specifically for carnivores that have no vegetarian options",
+      "expected_matches": ["Meat Lovers Paradise"],
+      "traditional_fails_because": "Matches 'meat' but doesn't understand the exclusivity aspect",
+      "reasoning_succeeds_because": "Understands meat-focused exclusivity: 'absolutely nothing for vegetarians'"
+    }
+  ],
+  "temporal_reasoning_queries": [
+    {
+      "query": "Find restaurants that were good in the past but have declined recently",
+      "expected_matches": ["Bella Vista (Under New Management)", "Trendy Spot Past Its Prime"],
+      "traditional_fails_because": "Can't understand temporal relationships or change over time",
+      "reasoning_succeeds_because": "Tracks temporal decline: 'used to be our go-to', 'something changed after new management'"
+    },
+    {
+      "query": "Find restaurants that have improved significantly over time",
+      "expected_matches": ["Brunch Evolution", "Redemption Story"],
+      "traditional_fails_because": "Doesn't recognize improvement narratives",
+      "reasoning_succeeds_because": "Understands transformation: 'complete transformation', 'elevated classic dishes'"
+    }
+  ],
+  "negation_exclusion_queries": [
+    {
+      "query": "Find restaurants that explicitly mention they are NOT suitable for large groups",
+      "expected_matches": ["Intimate Eats"],
+      "traditional_fails_because": "Traditional systems are notoriously bad at negation",
+      "reasoning_succeeds_because": "Processes negation clearly: 'NOT a place for groups larger than 4'"
+    },
+    {
+      "query": "Find restaurants that do NOT accept reservations under any circumstances",
+      "expected_matches": ["No Reservations Policy"],
+      "traditional_fails_because": "Struggles with absolute negation policies",
+      "reasoning_succeeds_because": "Understands absolute policy: 'absolutely DO NOT take reservations'"
+    },
+    {
+      "query": "Find restaurants that exclude minors after certain hours",
+      "expected_matches": ["Adults Only Establishment"],
+      "traditional_fails_because": "Doesn't understand age restriction policies",
+      "reasoning_succeeds_because": "Recognizes exclusion policy: '21+ policy after 8 PM - NO exceptions'"
+    }
+  ],
+  "comparative_reasoning_queries": [
+    {
+      "query": "Find restaurants that are better than their more famous competitors but still affordable",
+      "expected_matches": ["Hidden Gem Pizza", "Value King", "David vs Goliath"],
+      "traditional_fails_because": "Can't handle relative comparisons or understand competitive relationships",
+      "reasoning_succeeds_because": "Processes comparisons: 'better and half the price', 'better steaks at 60% of the price'"
+    }
+  ],
+  "meta_reasoning_queries": [
+    {
+      "query": "Find restaurants where the reviewer initially had low expectations but was pleasantly surprised",
+      "expected_matches": ["Strip Mall Surprise", "Redemption Story"],
+      "traditional_fails_because": "Can't track reviewer's emotional journey or changing opinions",
+      "reasoning_succeeds_because": "Tracks expectation reversal: 'wasn't expecting much', 'wow, was I wrong'"
+    }
+  ]
+}
