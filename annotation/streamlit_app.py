@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 # Constants
 APP_TITLE = "Restaurant Reviews Viewer"
 APP_ICON = "🍽️"
-DATA_FILE = "reasoning_restaurant_reviews.csv"
+DATA_FILE = "restaurant_reviews.csv"
 POSSIBLE_DATA_PATHS = [
     Path("../data") / DATA_FILE,
     Path("data") / DATA_FILE,

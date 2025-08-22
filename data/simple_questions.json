@@ -1,0 +1,100 @@
+{
+  "simple_queries": [
+    {
+      "query_id": 1,
+      "query": "Italian restaurant",
+      "expected_results": [
+        {
+          "restaurant_id": 1,
+          "restaurant": "Mario's Bistro",
+          "relevance": "highly_relevant",
+          "reason": "Explicitly Italian cuisine, authentic pasta"
+        },
+        {
+          "restaurant_id": 5,
+          "restaurant": "Tony's Italian Kitchen",
+          "relevance": "highly_relevant",
+          "reason": "Italian restaurant with authentic food and wine list"
+        }
+      ]
+    },
+    {
+      "query_id": 2,
+      "query": "sushi place",
+      "expected_results": [
+        {
+          "restaurant_id": 2,
+          "restaurant": "Sakura Sushi",
+          "relevance": "highly_relevant",
+          "reason": "Sushi restaurant with vegetarian options"
+        },
+        {
+          "restaurant_id": 8,
+          "restaurant": "Neko Sushi",
+          "relevance": "highly_relevant",
+          "reason": "Exclusive sushi experience, omakase style"
+        }
+      ]
+    },
+    {
+      "query_id": 3,
+      "query": "coffee shop",
+      "expected_results": [
+        {
+          "restaurant_id": 3,
+          "restaurant": "Code & Coffee",
+          "relevance": "highly_relevant",
+          "reason": "Coffee shop with work-friendly environment"
+        },
+        {
+          "restaurant_id": 6,
+          "restaurant": "Starbucks Downtown",
+          "relevance": "relevant",
+          "reason": "Coffee chain, though not work-friendly"
+        }
+      ]
+    },
+    {
+      "query_id": 4,
+      "query": "expensive dining",
+      "expected_results": [
+        {
+          "restaurant_id": 4,
+          "restaurant": "Le Bernardin SF",
+          "relevance": "highly_relevant",
+          "reason": "$220 per person tasting menu"
+        },
+        {
+          "restaurant_id": 8,
+          "restaurant": "Neko Sushi",
+          "relevance": "highly_relevant",
+          "reason": "$150 per person minimum, exclusive experience"
+        }
+      ]
+    },
+    {
+      "query_id": 5,
+      "query": "family restaurant",
+      "query_type": "simple_keyword",
+      "expected_results": [
+        {
+          "restaurant_id": 7,
+          "restaurant": "Giuseppe's Pizza",
+          "relevance": "highly_relevant",
+          "reason": "Perfect for big groups, family of 8, kids running around"
+        },
+        {
+          "restaurant_id": 12,
+          "restaurant": "Family Garden",
+          "relevance": "highly_relevant",
+          "reason": "Family-friendly, huge booths, kids menu, casual atmosphere"
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "description": "Simple keyword queries that both Dense and ColBERT retrieval can handle well",
+    "expected_performance": "tie",
+    "note": "These queries have clear keyword matches without complex logic"
+  }
+}

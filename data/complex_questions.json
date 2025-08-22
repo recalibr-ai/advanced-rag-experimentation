@@ -1,0 +1,122 @@
+{
+  "complex_queries": [
+    {
+      "query_id": 6,
+      "query": "quiet wifi laptop work under $30",
+      "query_type": "multi_constraint",
+      "expected_colbert_winner": {
+        "restaurant_id": 3,
+        "restaurant": "Code & Coffee",
+        "relevance": "highly_relevant",
+        "reason": "Matches ALL constraints: quiet zones✓ blazing wifi✓ work-friendly✓ under $30✓",
+        "supporting_text": "dedicated quiet zones, blazing fast wifi (100+ Mbps), comfortable chairs, been coming here daily for 3 months"
+      },
+      "why_dense_struggles": "Cannot match multiple simultaneous constraints - might return expensive work places or cheap non-work places",
+      "dense_likely_confusion": [
+        "Starbucks Downtown (wifi but NOT quiet)",
+        "Green Tea House (quiet but NO wifi)"
+      ]
+    },
+    {
+      "query_id": 7,
+      "query": "NOT noisy NOT expensive good for work",
+      "query_type": "negation_logic",
+      "expected_colbert_winner": {
+        "restaurant_id": 3,
+        "restaurant": "Code & Coffee",
+        "relevance": "highly_relevant",
+        "reason": "NOT noisy (quiet zones)✓ NOT expensive (reasonable)✓ work-friendly✓",
+        "supporting_text": "dedicated quiet zones, completely silent floor upstairs, exceptional coffee, daily for 3 months"
+      },
+      "why_dense_struggles": "Dense embeddings cannot handle negation logic - 'NOT noisy' confuses single-vector similarity",
+      "dense_likely_confusion": [
+        "Might return expensive quiet places",
+        "Cannot process NOT logic effectively"
+      ]
+    },
+    {
+      "query_id": 8,
+      "query": "expensive but worth every penny special occasion",
+      "query_type": "contradictory_context",
+      "expected_colbert_winner": {
+        "restaurant_id": 4,
+        "restaurant": "Le Bernardin SF",
+        "relevance": "highly_relevant",
+        "reason": "Expensive BUT explicitly worth it for special occasions",
+        "supporting_text": "EXPENSIVE $220 per person BUT worth every single penny, once-in-a-lifetime dining experience"
+      },
+      "why_dense_struggles": "Conflicting signals: 'expensive' vs 'worth it' - dense vector averages out the contradiction",
+      "dense_likely_confusion": [
+        "Might avoid due to 'expensive' signal",
+        "Cannot understand expensive BUT worth it paradox"
+      ]
+    },
+    {
+      "query_id": 9,
+      "query": "large family groups kids running around loud atmosphere",
+      "query_type": "multi_constraint",
+      "expected_colbert_winner": {
+        "restaurant_id": 7,
+        "restaurant": "Giuseppe's Pizza",
+        "relevance": "highly_relevant",
+        "reason": "Perfect for large groups✓ kids welcome✓ loud/lively  atmosphere✓",
+        "supporting_text": "8 people total, kids were running around andnobody cared, lively and loud in a good way, big groups"
+      },
+      "why_dense_struggles": "Multiple complex requirements - dense retrieval loses nuance in single similarity score",
+      "dense_likely_confusion": [
+        "Might return quiet family places",
+        "Cannot handle 'loud atmosphere' as positive"
+      ]
+    },
+    {
+      "query_id": 10,
+      "query": "vegetarian options but NOT expensive",
+      "query_type": "constraint_with_negation",
+      "expected_colbert_winner": {
+        "restaurant_id": 2,
+        "restaurant": "Sakura Sushi",
+        "relevance": "highly_relevant",
+        "reason": "Great vegetarian options✓ NOT expensive ($25 per person)✓",
+        "supporting_text": "caters to vegetarians, amazing tempura vegetable roll, reasonable prices around $25 per person"
+      },
+      "why_dense_struggles": "Cannot effectively combine positive constraint (vegetarian) with negation (NOT expensive)",
+      "dense_likely_confusion": [
+        "Might return expensive vegetarian places",
+        "Negation logic fails in embeddings"
+      ]
+    },
+    {
+      "query_id": 11,
+      "query": "work laptop but NOT like Starbucks chaos",
+      "query_type": "comparative_negation",
+      "expected_colbert_winner": {
+        "restaurant_id": 3,
+        "restaurant": "Code & Coffee",
+        "relevance": "highly_relevant",
+        "reason": "Work-friendly✓ laptop-suitable✓ NOT chaotic like Starbucks✓",
+        "supporting_text": "perfect work spots, quiet zones, completely silent floor - opposite of Starbucks chaos"
+      },
+      "why_dense_struggles": "Cannot process comparative negation - 'NOT like Starbucks' requires understanding specific comparison",
+      "dense_likely_confusion": [
+        "Might still return Starbucks",
+        "Cannot process comparative NOT logic"
+      ],
+      "anti_example": {
+        "restaurant_id": 6,
+        "restaurant": "Starbucks Downtown",
+        "why_wrong": "Explicitly described as 'absolute chaos' - exactly what query wants to avoid"
+      }
+    }
+  ],
+  "metadata": {
+    "description": "Complex queries where ColBERT's token-level matching should dominate Dense retrieval",
+    "expected_performance": "colbert_wins",
+    "key_advantages": [
+      "Multi-constraint handling",
+      "Negation logic understanding",
+      "Contradictory requirement resolution",
+      "Comparative reasoning"
+    ],
+    "dense_weakness": "Single similarity vector cannot handle complex logical combinations"
+  }
+}
