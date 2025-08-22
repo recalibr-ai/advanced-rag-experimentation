@@ -727,79 +727,119 @@
             <h2>🔍 Inverted Index Deep Dive</h2>
             
             <div class="document-example">
-                <h4>📄 Example Document Collection</h4>
+                <h4>📄 Example Document Collection (Real Complexity)</h4>
                 <div class="doc-item">
-                    <strong>Doc 1:</strong> "python tutorial basics" → Tokens in clusters [5, 8, 2]
+                    <strong>Doc 1:</strong> "python tutorial basics"<br>
+                    Token "python": chunks in clusters [CB1:15, CB2:203]<br>
+                    Token "tutorial": chunks in clusters [CB1:45, CB2:112]<br>
+                    Token "basics": chunks in clusters [CB1:92, CB2:156]
                 </div>
                 <div class="doc-item">
-                    <strong>Doc 2:</strong> "java programming guide" → Tokens in clusters [3, 5, 8]  
+                    <strong>Doc 2:</strong> "java programming guide"<br>
+                    Token "java": chunks in clusters [CB1:78, CB2:234]<br>
+                    Token "programming": chunks in clusters [CB1:15, CB2:200]<br>
+                    Token "guide": chunks in clusters [CB1:45, CB2:98]
                 </div>
                 <div class="doc-item">
-                    <strong>Doc 3:</strong> "machine learning python" → Tokens in clusters [1, 2, 5]
+                    <strong>Doc 3:</strong> "machine learning python"<br>
+                    Token "machine": chunks in clusters [CB1:134, CB2:67]<br>
+                    Token "learning": chunks in clusters [CB1:92, CB2:178]<br>
+                    Token "python": chunks in clusters [CB1:15, CB2:203]
                 </div>
-                <div class="doc-item">
-                    <strong>Doc 4:</strong> "data science tutorial" → Tokens in clusters [7, 6, 8]
-                </div>
-                <div class="doc-item">
-                    <strong>Doc 5:</strong> "neural networks deep" → Tokens in clusters [9, 4, 10]
+                
+                <div style="background: #fff3e0; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                    <strong>Key Insight:</strong> Each token produces 2 cluster assignments (one per chunk in our example)<br>
+                    CB1 = Codebook 1 (for chunk 1: dims 0-1), CB2 = Codebook 2 (for chunk 2: dims 2-3)<br>
+                    <em>Total inverted index size: 2 codebooks × 256 clusters = 512 cluster lists</em><br>
+                    <em>(Real ColBERT: 4 codebooks × 256 = 1,024 cluster lists)</em>
                 </div>
             </div>
 
-            <div class="arrow-down">↓ Build Inverted Index ↓</div>
+            <div class="arrow-down">↓ Build Inverted Index (512 lists!) ↓</div>
 
             <div class="cluster-mapping">
-                <h4>🗂️ Cluster → Document Mapping</h4>
-                <div class="cluster-item">
-                    <strong>Cluster 1:</strong> [Doc 3] → machine learning tokens
+                <h4>🗂️ Sample Cluster → Document Mappings (Showing Just a Few)</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div>
+                        <div class="cluster-item">
+                            <strong>Codebook 1, Cluster 15:</strong> [Doc 1, Doc 2, Doc 3]<br>
+                            <em>"python" and "programming" chunk 1 patterns (dims 0-1)</em>
+                        </div>
+                        <div class="cluster-item">
+                            <strong>Codebook 1, Cluster 45:</strong> [Doc 1, Doc 2]<br>
+                            <em>"tutorial" and "guide" chunk 1 patterns (dims 0-1)</em>
+                        </div>
+                        <div class="cluster-item">
+                            <strong>Codebook 1, Cluster 92:</strong> [Doc 1, Doc 3]<br>
+                            <em>"basics" and "learning" chunk 1 patterns (dims 0-1)</em>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="cluster-item">
+                            <strong>Codebook 2, Cluster 203:</strong> [Doc 1, Doc 3]<br>
+                            <em>"python" chunk 2 patterns (dims 2-3)</em>
+                        </div>
+                        <div class="cluster-item">
+                            <strong>Codebook 2, Cluster 112:</strong> [Doc 1]<br>
+                            <em>"tutorial" chunk 2 patterns (dims 2-3)</em>
+                        </div>
+                        <div class="cluster-item">
+                            <strong>Codebook 2, Cluster 200:</strong> [Doc 2]<br>
+                            <em>"programming" chunk 2 patterns (dims 2-3)</em>
+                        </div>
+                    </div>
                 </div>
-                <div class="cluster-item">
-                    <strong>Cluster 2:</strong> [Doc 1, Doc 3] → basics, learning tokens
-                </div>
-                <div class="cluster-item">
-                    <strong>Cluster 3:</strong> [Doc 2] → java programming tokens
-                </div>
-                <div class="cluster-item">
-                    <strong>Cluster 5:</strong> [Doc 1, Doc 2, Doc 3] → python programming tokens
-                </div>
-                <div class="cluster-item">
-                    <strong>Cluster 8:</strong> [Doc 1, Doc 2, Doc 4] → tutorial, guide tokens
-                </div>
-                <div style="text-align: center; margin-top: 20px; color: #666;">
-                    ... and so on for all clusters
+                <div style="text-align: center; margin-top: 20px; color: #666; font-style: italic;">
+                    ... and 506 more cluster lists for all other combinations
                 </div>
             </div>
 
             <div class="search-demo">
-                <h4>⚡ Lightning Fast Search Example</h4>
+                <h4>⚡ Real Search Example</h4>
                 <div class="search-step">
                     <strong>Query:</strong> "python tutorial" 
-                    <br>Maps to clusters [5, 8] after encoding
                 </div>
                 <div class="search-step">
-                    <strong>Index Lookup:</strong>
-                    <br>Cluster 5 → [Doc 1, Doc 2, Doc 3]
-                    <br>Cluster 8 → [Doc 1, Doc 2, Doc 4]
+                    <strong>Step 1:</strong> Encode "python" → chunks map to clusters [CB1:15, CB2:203]
                 </div>
                 <div class="search-step">
-                    <strong>Union:</strong> Candidate documents = [Doc 1, Doc 2, Doc 3, Doc 4]
-                    <br><em>Instantly found without scanning Doc 5!</em>
+                    <strong>Step 2:</strong> Encode "tutorial" → chunks map to clusters [CB1:45, CB2:112]
                 </div>
                 <div class="search-step">
-                    <strong>Result:</strong> 80% of documents eliminated in microseconds
+                    <strong>Step 3:</strong> Look up 4 inverted lists:
+                    <br>CB1:15→[Doc1,Doc2,Doc3], CB2:203→[Doc1,Doc3]
+                    <br>CB1:45→[Doc1,Doc2], CB2:112→[Doc1]
+                </div>
+                <div class="search-step">
+                    <strong>Union:</strong> Candidate documents = [Doc 1, Doc 2, Doc 3]
+                    <br><em>All documents survive because they share some chunk patterns with the query</em>
                 </div>
             </div>
 
             <div class="caption">
-                Inverted index transforms O(n) document scanning into O(1) cluster lookups
+                In our example: 512 cluster lists (2 codebooks × 256). Real ColBERT: 1,024 lists (4 codebooks × 256)
             </div>
         </div>
 
         <!-- Lookup Process Detailed -->
         <div class="slide">
-            <h2>🔍 How Lookups Actually Work</h2>
+            <h2>🔍 How Lookups Actually Work (PLAID Stage 1)</h2>
+            
+            <div style="background: #fff3e0; border: 2px solid #ff9800; border-radius: 10px; padding: 20px; margin: 20px 0;">
+                <h4>📚 PLAID Search Engine Context</h4>
+                <div style="text-align: center; font-size: 1.1em; margin: 15px 0;">
+                    <strong>PLAID has 3 stages:</strong><br>
+                    <strong>Stage 1:</strong> Inverted Index Lookup (explained below)<br>
+                    <strong>Stage 2:</strong> Approximate scoring with cluster centroids<br>
+                    <strong>Stage 3:</strong> Exact ColBERT MaxSim scoring<br>
+                </div>
+                <div style="background: rgba(255,255,255,0.8); padding: 15px; border-radius: 8px; margin: 15px 0; text-align: center;">
+                    <em>We're focusing on Stage 1 - the inverted index lookup that does the heavy filtering</em>
+                </div>
+            </div>
             
             <div class="detailed-example">
-                <h4>🎯 Complete Search Pipeline</h4>
+                <h4>🎯 Stage 1: Inverted Index Lookup</h4>
                 <div style="background: #e3f2fd; padding: 25px; border-radius: 15px; margin: 20px 0;">
                     <div style="font-size: 1.3em; text-align: center; margin-bottom: 20px;">
                         <strong>Query: "python machine learning"</strong>
@@ -807,20 +847,24 @@
                     
                     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin: 20px 0;">
                         <div style="background: white; padding: 15px; border-radius: 8px; text-align: center;">
-                            <strong>Token 1</strong><br>
-                            "python"<br>
-                            → Cluster 5
+                            <strong>Token 1: "python"</strong><br>
+                            Chunk 1 → Cluster 15 (CB1)<br>
+                            Chunk 2 → Cluster 203 (CB2)
                         </div>
                         <div style="background: white; padding: 15px; border-radius: 8px; text-align: center;">
-                            <strong>Token 2</strong><br>
-                            "machine"<br>
-                            → Cluster 1
+                            <strong>Token 2: "machine"</strong><br>
+                            Chunk 1 → Cluster 134 (CB1)<br>
+                            Chunk 2 → Cluster 67 (CB2)
                         </div>
                         <div style="background: white; padding: 15px; border-radius: 8px; text-align: center;">
-                            <strong>Token 3</strong><br>
-                            "learning"<br>
-                            → Cluster 2
+                            <strong>Token 3: "learning"</strong><br>
+                            Chunk 1 → Cluster 92 (CB1)<br>
+                            Chunk 2 → Cluster 178 (CB2)
                         </div>
+                    </div>
+                    
+                    <div style="text-align: center; background: #fff3e0; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                        <strong>Total clusters to lookup:</strong> 6 (3 tokens × 2 chunks each)
                     </div>
                 </div>
             </div>
@@ -828,44 +872,35 @@
             <div class="arrow-down">↓ Inverted Index Lookup ↓</div>
 
             <div class="detailed-example">
-                <h4>📚 Index Lookups (Parallel)</h4>
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin: 20px 0;">
-                    <div style="background: #f3e5f5; padding: 20px; border-radius: 10px;">
-                        <h4>Cluster 5 Lookup</h4>
-                        <div style="font-family: 'Courier New', monospace; background: white; padding: 10px; border-radius: 6px; margin: 8px 0;">
-                            hash_table[5] → offset_1234
+                <h4>📚 Index Lookups (6 Parallel Lookups)</h4>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 20px 0;">
+                    <div style="background: #f3e5f5; padding: 15px; border-radius: 10px;">
+                        <h4>"python" Lookups</h4>
+                        <div style="font-family: 'Courier New', monospace; background: white; padding: 8px; border-radius: 6px; margin: 6px 0; font-size: 0.9em;">
+                            CB1[15] → [Doc1, Doc2, Doc3]
                         </div>
-                        <div style="font-family: 'Courier New', monospace; background: white; padding: 10px; border-radius: 6px; margin: 8px 0;">
-                            read(offset_1234) → [Doc1, Doc2, Doc3, Doc7]
-                        </div>
-                        <div style="text-align: center; margin-top: 10px;">
-                            <strong>4 candidates</strong>
+                        <div style="font-family: 'Courier New', monospace; background: white; padding: 8px; border-radius: 6px; margin: 6px 0; font-size: 0.9em;">
+                            CB2[203] → [Doc1, Doc3]
                         </div>
                     </div>
                     
-                    <div style="background: #f3e5f5; padding: 20px; border-radius: 10px;">
-                        <h4>Cluster 1 Lookup</h4>
-                        <div style="font-family: 'Courier New', monospace; background: white; padding: 10px; border-radius: 6px; margin: 8px 0;">
-                            hash_table[1] → offset_5678
+                    <div style="background: #f3e5f5; padding: 15px; border-radius: 10px;">
+                        <h4>"machine" Lookups</h4>
+                        <div style="font-family: 'Courier New', monospace; background: white; padding: 8px; border-radius: 6px; margin: 6px 0; font-size: 0.9em;">
+                            CB1[134] → [Doc3, Doc5]
                         </div>
-                        <div style="font-family: 'Courier New', monospace; background: white; padding: 10px; border-radius: 6px; margin: 8px 0;">
-                            read(offset_5678) → [Doc3, Doc5, Doc9]
-                        </div>
-                        <div style="text-align: center; margin-top: 10px;">
-                            <strong>3 candidates</strong>
+                        <div style="font-family: 'Courier New', monospace; background: white; padding: 8px; border-radius: 6px; margin: 6px 0; font-size: 0.9em;">
+                            CB2[67] → [Doc3]
                         </div>
                     </div>
                     
-                    <div style="background: #f3e5f5; padding: 20px; border-radius: 10px;">
-                        <h4>Cluster 2 Lookup</h4>
-                        <div style="font-family: 'Courier New', monospace; background: white; padding: 10px; border-radius: 6px; margin: 8px 0;">
-                            hash_table[2] → offset_9012
+                    <div style="background: #f3e5f5; padding: 15px; border-radius: 10px;">
+                        <h4>"learning" Lookups</h4>
+                        <div style="font-family: 'Courier New', monospace; background: white; padding: 8px; border-radius: 6px; margin: 6px 0; font-size: 0.9em;">
+                            CB1[92] → [Doc1, Doc3, Doc4]
                         </div>
-                        <div style="font-family: 'Courier New', monospace; background: white; padding: 10px; border-radius: 6px; margin: 8px 0;">
-                            read(offset_9012) → [Doc1, Doc3, Doc4, Doc6]
-                        </div>
-                        <div style="text-align: center; margin-top: 10px;">
-                            <strong>4 candidates</strong>
+                        <div style="font-family: 'Courier New', monospace; background: white; padding: 8px; border-radius: 6px; margin: 6px 0; font-size: 0.9em;">
+                            CB2[178] → [Doc3, Doc4]
                         </div>
                     </div>
                 </div>
@@ -876,23 +911,29 @@
             <div class="search-demo">
                 <h4>🔗 Candidate Document Fusion</h4>
                 <div class="search-step">
-                    <strong>Step 1: Collect all candidates</strong><br>
-                    Cluster 5: [Doc1, Doc2, Doc3, Doc7]<br>
-                    Cluster 1: [Doc3, Doc5, Doc9]<br>
-                    Cluster 2: [Doc1, Doc3, Doc4, Doc6]
+                    <strong>Step 1: Collect from all 6 lookups</strong><br>
+                    CB1[15]: [Doc1, Doc2, Doc3]<br>
+                    CB2[203]: [Doc1, Doc3]<br>
+                    CB1[134]: [Doc3, Doc5]<br>
+                    CB2[67]: [Doc3]<br>
+                    CB1[92]: [Doc1, Doc3, Doc4]<br>
+                    CB2[178]: [Doc3, Doc4]
                 </div>
                 <div class="search-step">
                     <strong>Step 2: Union (eliminate duplicates)</strong><br>
-                    Final candidates: [Doc1, Doc2, Doc3, Doc4, Doc5, Doc6, Doc7, Doc9]
+                    Final candidates: [Doc1, Doc2, Doc3, Doc4, Doc5]
                 </div>
                 <div class="search-step">
                     <strong>Step 3: Stats</strong><br>
-                    From 1,000,000 documents → 8 candidates (99.9992% filtered!)
+                    From 1,000,000 documents → 5 candidates (99.9995% filtered!)
+                </div>
+                <div class="search-step">
+                    <strong>Next:</strong> PLAID Stage 2 & 3 will process these 5 candidates
                 </div>
             </div>
 
             <div class="caption">
-                Three parallel hash lookups + one union operation = instant candidate retrieval
+                Stage 1 does the heavy lifting: Six parallel hash lookups + union = instant massive filtering
             </div>
         </div>
 
