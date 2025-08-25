@@ -224,5 +224,4 @@ restaurant_reviews_vectors/
 embeddings_cache/
 
 # Large PDF files
-research/*.pdf
-*.pdf
+Beyond*.pdf
