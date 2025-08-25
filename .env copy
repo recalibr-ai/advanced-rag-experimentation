@@ -1,0 +1,35 @@
+# Advanced RAG Experimentation - Environment Configuration
+# This file contains all shared configuration for notebooks and scripts
+
+# Project Structure
+PROJECT_ROOT=YOUR_ROOT_FOLDER
+DATA_DIR=${PROJECT_ROOT}/data
+RESEARCH_DIR=${PROJECT_ROOT}/research
+SCRIPTS_DIR=${PROJECT_ROOT}/scripts
+DOCS_DIR=${PROJECT_ROOT}/docs
+NOTEBOOKS_DIR=${PROJECT_ROOT}/notebooks
+ANNOTATION_DIR=${PROJECT_ROOT}/annotation
+
+# Vector Storage
+VECTOR_STORE_DIR=${PROJECT_ROOT}/vector_store
+
+# Data Files
+RESTAURANT_REVIEWS_CSV=${DATA_DIR}/restaurant_reviews.csv
+
+# Model Configuration
+DENSE_MODEL_NAME=all-MiniLM-L6-v2
+COLBERT_MODEL_NAME=sentence-transformers/all-MiniLM-L6-v2
+
+# Device Configuration (auto, mps, cuda, cpu)
+DEVICE=auto
+
+# Demo Configuration
+MAX_REVIEWS=12
+EMBEDDING_DIMENSION=384
+TOP_K_RESULTS=3
+
+# Development Settings
+DEBUG=false
+CACHE_EMBEDDINGS=true
+CLEAR_CACHE_ON_START=false
+MODEL_DIR=${PROJECT_ROOT}/models
